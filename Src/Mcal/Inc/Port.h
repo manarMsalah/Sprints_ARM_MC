@@ -1,44 +1,31 @@
 /**********************************************************************************************************************
+
  *  FILE DESCRIPTION
  *  -------------------------------------------------------------------------------------------------------------------
- *         File:  Platform_Types.h
- *       Module:  -
+ *         File:  Port.h
+ *       Module:  Port
  *
- *  Description:  Contains types that dependent on platform - CortexM4     
+ *  Description:  Header file for port module.     
  *  
  *********************************************************************************************************************/
-#ifndef PLATFORM_TYPES_H
-#define PLATFORM_TYPES_H
+#ifndef PORT_H
+#define PORT_H
 
 /**********************************************************************************************************************
  * INCLUDES
  *********************************************************************************************************************/
+ #include "Std_Types.h"
+#include "port_Cfg.h"
+
 
 
 /**********************************************************************************************************************
  *  GLOBAL CONSTANT MACROS
  *********************************************************************************************************************/
-#define WORD_LENGTH_BITS      32u
-#define WORD_LENGTH_BYTES     4u
-#define MSB_FIRST             0u    /* big endian bit ordering */
-#define LSB_FIRST        1u    /* little endian bit ordering */
 
-#define HIGH_BYTE_FIRST  0u    /* big endian byte ordering */
-#define LOW_BYTE_FIRST   1u    /* little endian byte ordering */
-
-#ifndef TRUE
-   #define TRUE   1u
-#endif
-
-#ifndef FALSE
-   #define FALSE  0u
-#endif
-
-#define ENABLE    1u
-#define DISABLE   0u
-
-#define CPU_BIT_ORDER    LSB_FIRST        /*little endian bit ordering*/
-#define CPU_BYTE_ORDER   LOW_BYTE_FIRST   /*little endian byte ordering*/
+ /* Macros for Port Status */
+#define PORT_INITIALIZED                (1U)
+#define PORT_NOT_INITIALIZED            (0U)
 
 /**********************************************************************************************************************
  *  GLOBAL FUNCTION MACROS
@@ -48,35 +35,70 @@
 /**********************************************************************************************************************
  *  GLOBAL DATA TYPES AND STRUCTURES
  *********************************************************************************************************************/
-typedef unsigned char         boolean;       /*        TRUE .. FALSE           */
+/* Type definition for Port_PinType used by the PORT APIs */
+typedef uint8 Port_PinType;
 
-typedef signed char           sint8;         /*        -128 .. +127            */
-typedef unsigned char         uint8;         /*           0 .. 255             */
-typedef signed short          sint16;        /*      -32768 .. +32767          */
-typedef unsigned short        uint16;        /*           0 .. 65535           */
-typedef signed long           sint32;        /* -2147483648 .. +2147483647     */
-typedef unsigned long         uint32;        /*           0 .. 4294967295      */
+/* Type definition for Port_PinModeType used by the PORT APIs */
+typedef uint8 Port_PinModeType;
 
-typedef float                 float32;
-typedef double                float64;
+/* Type definition for Port_PinOutputCurrentType used by the PORT APIs */
+typedef uint8 Port_PinOutputCurrentType;
 
-#ifdef PLATFORM_SUPPORT_SINT64_UINT64 /*Valid only for gnu and C99 */
-typedef signed    long long  sint64;   /* -9223372036854775808 .. 9223372036854775807      */
-typedef unsigned  long long  uint64;   /*                    0 .. 18446744073709551615     */
-#endif
+/*enum for Port_PinDirectionType*/
+typedef enum
+{
+	/* Member Sets port pin as input */
+	PORT_PIN_IN=0,
+	/* Member Sets port pin as output */
+	PORT_PIN_OUT=1
+}Port_PinDirectionType;
+
+/* Description: Enum to hold internal resistor type for PIN */
+typedef enum
+{
+    DISABLE=0,
+    PULL_UP=1,
+    PULL_DOWN=2
+}Port_PinInternalAttach;
+
+typedef struct
+{
+	uint8 Port_num;
+
+	Port_PinType Pin_num;
+
+	Port_PinDirectionType Pin_direction;
+
+	Port_PinModeType Pin_mode;
+
+	Port_PinInternalAttach resistor;
+
+	uint8 PortPinLevelValue;
+	
+	Port_PinOutputCurrentType PortPinOutputCurrent;
+
+}Port_ConfigChannel;
+
+
+/* Data Structure required for initializing the port Driver */
+typedef struct
+{
+	Port_ConfigChannel Channel[NUMBER_OF_CHANNELS];
+}Port_ConfigType;
 
 /**********************************************************************************************************************
  *  GLOBAL DATA PROTOTYPES
  *********************************************************************************************************************/
-
+extern const Port_ConfigType Port_Configuration;
  
 /**********************************************************************************************************************
  *  GLOBAL FUNCTION PROTOTYPES
  *********************************************************************************************************************/
-
+/* Function for port init API */
+void Port_Init( const Port_ConfigType* ConfigPtr );
  
-#endif  /* PLATFORM_TYPES_H */
+#endif  /* PORT_H */
 
 /**********************************************************************************************************************
- *  END OF FILE: Std_Types.h
+ *  END OF FILE: Port.h
  *********************************************************************************************************************/

@@ -1,14 +1,15 @@
 /**********************************************************************************************************************
+
  *  FILE DESCRIPTION
  *  -------------------------------------------------------------------------------------------------------------------
- *         File:  Compiler.h
+ *         File:  Common_Macros.h
  *       Module:  -
  *
- *  Description:  Contains Compiler Dependent MACRO Definition     
+ *  Description:  Commonly used Macros.     
  *  
  *********************************************************************************************************************/
-#ifndef COMPILER_H
-#define COMPILER_H
+#ifndef COMMON_MACROS
+#define COMMON_MACROS
 
 /**********************************************************************************************************************
  * INCLUDES
@@ -18,21 +19,31 @@
 /**********************************************************************************************************************
  *  GLOBAL CONSTANT MACROS
  *********************************************************************************************************************/
-/* NULL_PTR define with a void pointer to zero definition*/
-#define NULL_PTR       ((void *)0)
 
-/* INLINE  define for abstraction of the keyword inline*/
-#define INLINE         inline
-
-/* LOCAL_INLINE define for abstraction of the keyword inline in functions with "static" scope.
-   Different compilers may require a different sequence of the keywords "static" and "inline" 
-   if this is supported at all. */
-#define LOCAL_INLINE   static inline
 
 /**********************************************************************************************************************
  *  GLOBAL FUNCTION MACROS
  *********************************************************************************************************************/
+/* Set a certain bit in any register */
+#define SET_BIT(REG,BIT) (REG|=(1<<BIT))
 
+/* Clear a certain bit in any register */
+#define CLEAR_BIT(REG,BIT) (REG&=(~(1<<BIT)))
+
+/* Toggle a certain bit in any register */
+#define TOGGLE_BIT(REG,BIT) (REG^=(1<<BIT))
+
+/* Rotate right the register value with specific number of rotates */
+#define ROR(REG,num) ( REG = (REG>>num) | (REG << ((sizeof(REG) * 8)-num)) )
+
+/* Rotate left the register value with specific number of rotates */
+#define ROL(REG,num) ( REG = (REG<<num) | (REG >> ((sizeof(REG) * 8)-num)) )
+
+/* Check if a specific bit is set in any register and return true if yes */
+#define BIT_IS_SET(REG,BIT) ( REG & (1<<BIT) )
+
+/* Check if a specific bit is cleared in any register and return true if yes */
+#define BIT_IS_CLEAR(REG,BIT) ( !(REG & (1<<BIT)) )
 
 /**********************************************************************************************************************
  *  GLOBAL DATA TYPES AND STRUCTURES
@@ -49,8 +60,8 @@
  *********************************************************************************************************************/
 
  
-#endif  /* COMPILER_H */
+#endif  /* COMMON_MACROS_H */
 
 /**********************************************************************************************************************
- *  END OF FILE: Std_Types.h
+ *  END OF FILE: Common_Macros.h
  *********************************************************************************************************************/
