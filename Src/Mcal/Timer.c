@@ -49,7 +49,7 @@
 * \Syntax          : void Systick_start(Timer_ValueType tick_time)        
 * \Description     : Enable and set SysTick timer.                                    
 *                                                                             
-* \Sync\Async      : Asynchronous                                               
+* \Sync\Async      : Synchronous                                               
 * \Reentrancy      : Reentrant                                             
 * \Parameters (in) : tick_time - tick time in millisecond.                     
 * \Parameters (out): None                                                      
