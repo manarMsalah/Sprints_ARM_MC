@@ -31,7 +31,6 @@
  *  GLOBAL DATA
  *********************************************************************************************************************/
  
-static  void (*Systick_Call_Back_Ptr)(void) = NULL_PTR;
 
 /**********************************************************************************************************************
  *  LOCAL FUNCTION PROTOTYPES
@@ -87,21 +86,6 @@ void Systick_stop(void)
 	SYSTICK_CTRL_REG = 0;
 }
 
-
-/******************************************************************************
-* \Syntax          : void Systick_setCallBack(void)        
-* \Description     : Function to set which function will call it back.                                    
-*                                                                             
-* \Sync\Async      : Synchronous                                               
-* \Reentrancy      : Reentrant                                             
-* \Parameters (in) : None                      
-* \Parameters (out): None.                                                      
-* \Return value:   : None.                                  
-*******************************************************************************/
-void Systick_setCallBack(void)
-{
-	Systick_Call_Back_Ptr = SysTick_CallBackFun();
-}
 
 
 /******************************************************************************
