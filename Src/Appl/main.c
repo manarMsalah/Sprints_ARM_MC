@@ -1,29 +1,16 @@
 
-#include "Port.h"
-#include "IntCtrl.h"
-#include "Timer.h"
-#include "Led.h"
+#include "Appl.h"
 
-#define Enable_Global_Interrupt()    __asm("CPSIE I")
-#define Disable_Global_Interrupt()   __asm("CPSID I")
-
-
-#define NUMBER_OF_SECONDS      1
-
+#define ON_TIME   2
+#define OFF_TIME  3
 
 int main (void)
 {
-	Port_Init(&Port_Configuration);
-	IntCtrl_init(&IntCtrl_Configuration);
-	
-	Systick_setCallBack(Led_toggel);
-	Enable_Global_Interrupt();
-	Systick_start(NUMBER_OF_SECONDS);
-	
+	Appl_SetUp();
 
 	while(1)
 	{
-		
+		Appl_LedControl(ON_TIME, OFF_TIME);
 	}
 	
 	

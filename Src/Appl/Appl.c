@@ -1,8 +1,8 @@
 /**********************************************************************************************************************
  *  FILE DESCRIPTION
  *  -----------------------------------------------------------------------------------------------------------------*/
-/**        \file  Led.c
- *        \brief  Source file for Led module.
+/**        \file  Appl.c
+ *        \brief  Source file for Appl module.
  *
  *      \details  
  *
@@ -12,12 +12,20 @@
 /**********************************************************************************************************************
  *  INCLUDES
  *********************************************************************************************************************/
+#include "Port.h"
+#include "IntCtrl.h"
+#include "Timer.h"
 #include "Led.h"
-#include "Dio.h"
+#include "Appl.h"
 
 /**********************************************************************************************************************
 *  LOCAL MACROS CONSTANT\FUNCTION
 *********************************************************************************************************************/
+#define Enable_Global_Interrupt()    __asm("CPSIE I")
+#define Disable_Global_Interrupt()   __asm("CPSID I")
+
+
+#define TICK_TIME_BY_SECOND      1
 
 /**********************************************************************************************************************
  *  LOCAL DATA 
@@ -26,6 +34,8 @@
 /**********************************************************************************************************************
  *  GLOBAL DATA
  *********************************************************************************************************************/
+uint16 New_Tick_Count = 0;
+uint8 New_Tick_Flag = 0;
 
 /**********************************************************************************************************************
  *  LOCAL FUNCTION PROTOTYPES
@@ -38,55 +48,87 @@
 /**********************************************************************************************************************
  *  GLOBAL FUNCTIONS
  *********************************************************************************************************************/
-
-
 /******************************************************************************
-* \Syntax          : void Led_setOn(void)        
-* \Description     : Function to set the led on by writting 1 on the meant channel.                                   
+* \Syntax          : void Appl_SetUp(void)        
+* \Description     : lights a LED for the given ON time, and dim it for the given OFF time.                                    
 *                                                                             
 * \Sync\Async      : Synchronous                                               
 * \Reentrancy      : Reentrant                                             
-* \Parameters (in) : None                     
+* \Parameters (in) : None
 * \Parameters (out): None                                                      
-* \Return value:   : None                                 
+* \Return value:   : None                                  
 *******************************************************************************/
-void Led_setOn(void)
+void Appl_SetUp(void)
 {
-	Dio_WriteChannel(CHANNAL_F1, LED_ON);	
+	Port_Init(&Port_Configuration);
+	IntCtrl_init(&IntCtrl_Configuration);
+	
+	Enable_Global_Interrupt();
+	
+	Systick_setCallBack(Appl_NewTick);
+	
+	Systick_start(TICK_TIME_BY_SECOND);
+	
 }
 
 
+
 /******************************************************************************
-* \Syntax          : void Led_setOFF(void)        
-* \Description     : Function to set the led off by writting 0 on the meant channel.                                    
+* \Syntax          : void Appl_NewTick(void)        
+* \Description     : lights a LED for the given ON time, and dim it for the given OFF time.                                    
 *                                                                             
 * \Sync\Async      : Synchronous                                               
 * \Reentrancy      : Reentrant                                             
-* \Parameters (in) : None                     
+* \Parameters (in) : on_time
+                     off_time
 * \Parameters (out): None                                                      
-* \Return value:   : None                                 
+* \Return value:   : None                                  
 *******************************************************************************/
-void Led_setOff(void)
+void Appl_NewTick(void)
 {
-	Dio_WriteChannel(CHANNAL_F1, LED_OFF);	
+	New_Tick_Count= +TICK_TIME_BY_SECOND;
+	New_Tick_Flag= 1;
+	
 }
 
-
 /******************************************************************************
-* \Syntax          : void Led_toggel(void)        
-* \Description     : Function to toggel the led state by flipping the meant channel level.                                    
+* \Syntax          : void Led_Control(uint16 on_time, uint16 off_time)        
+* \Description     : lights a LED for the given ON time, and dim it for the given OFF time.                                    
 *                                                                             
 * \Sync\Async      : Synchronous                                               
 * \Reentrancy      : Reentrant                                             
-* \Parameters (in) : None                     
+* \Parameters (in) : on_time
+                     off_time
 * \Parameters (out): None                                                      
-* \Return value:   : None                                 
+* \Return value:   : None                                  
 *******************************************************************************/
-void Led_toggel(void)
+void Appl_LedControl(uint16 on_time, uint16 off_time)
 {
-	Dio_LevelType level = Dio_FlipChannel(CHANNAL_F1);	
+	while(1)
+	{
+			if(New_Tick_Flag == 1)
+			{
+				if(New_Tick_Count == on_time)
+				{
+					  Led_setOn();
+			      New_Tick_Flag= 0;
+				}
+
+		    else if(New_Tick_Count == off_time)
+				{
+					Led_setOff();
+		    	New_Tick_Flag= 0;
+		    	New_Tick_Count= 0;
+				}
+			}
+
+	}
+	
+			
+
+	
 }
 
 /**********************************************************************************************************************
- *  END OF FILE: Led.c
+ *  END OF FILE: Appl.c
  *********************************************************************************************************************/
