@@ -43,7 +43,7 @@
 
 /* structure to hold the interupt configurations. */
 typedef struct{
-	IntCtrl_InterruptType Int_Periph_Gates;
+	IntCtrl_InterruptType Exception_Type;
 	uint8 Int_Avalablity;
 	uint8 Int_Group_Priority;
 	uint8 Int_Sub_Group_Priority;
