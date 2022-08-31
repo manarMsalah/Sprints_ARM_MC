@@ -14,7 +14,8 @@
 /**********************************************************************************************************************
  * INCLUDES
  *********************************************************************************************************************/
- #include "Std_Types.h"
+#include "Std_Types.h"
+#include "Common_Macros.h"
 #include "port_Cfg.h"
 
 
@@ -56,9 +57,8 @@ typedef enum
 /* Description: Enum to hold internal resistor type for PIN */
 typedef enum
 {
-    DISABLE=0,
-    PULL_UP=1,
-    PULL_DOWN=2
+    PULL_UP= 1,
+    PULL_DOWN= 2
 }Port_PinInternalAttach;
 
 typedef struct
