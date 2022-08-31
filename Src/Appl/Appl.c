@@ -50,7 +50,7 @@ uint8 New_Tick_Flag = 0;
  *********************************************************************************************************************/
 /******************************************************************************
 * \Syntax          : void Appl_SetUp(void)        
-* \Description     : lights a LED for the given ON time, and dim it for the given OFF time.                                    
+* \Description     : Set drivers gonfigurations and start timer.                                    
 *                                                                             
 * \Sync\Async      : Synchronous                                               
 * \Reentrancy      : Reentrant                                             
@@ -69,18 +69,19 @@ void Appl_SetUp(void)
 	
 	Systick_start(TICK_TIME_BY_SECOND);
 	
+	Led_setOn();
+	
 }
 
 
 
 /******************************************************************************
 * \Syntax          : void Appl_NewTick(void)        
-* \Description     : lights a LED for the given ON time, and dim it for the given OFF time.                                    
+* \Description     : Calculate timer tick counts.                                    
 *                                                                             
 * \Sync\Async      : Synchronous                                               
 * \Reentrancy      : Reentrant                                             
-* \Parameters (in) : on_time
-                     off_time
+* \Parameters (in) : None
 * \Parameters (out): None                                                      
 * \Return value:   : None                                  
 *******************************************************************************/
@@ -110,13 +111,13 @@ void Appl_LedControl(uint16 on_time, uint16 off_time)
 			{
 				if(New_Tick_Count == on_time)
 				{
-					  Led_setOn();
-			      New_Tick_Flag= 0;
+					Led_setOff();
+					New_Tick_Flag= 0;		      
 				}
 
 		    else if(New_Tick_Count == off_time)
 				{
-					Led_setOff();
+					Led_setOn();
 		    	New_Tick_Flag= 0;
 		    	New_Tick_Count= 0;
 				}
