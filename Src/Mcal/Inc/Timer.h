@@ -45,7 +45,7 @@ void Systick_start(Systick_ValueType tick_time);
 
 void Systick_stop(void);
 
-void Systick_setCallBack(void);
+
 
 
  
