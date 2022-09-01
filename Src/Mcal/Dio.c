@@ -33,10 +33,12 @@
 #define BITBAND_BASE_PERIPHERALS          (volatile uint32 *)0x40000000
 #define BITBAND_ALIAS_BASE_PERIPHERALS    (volatile uint32 *)0x42000000
 
-/* bit_word_offset = (byte_offset x 32) + (bit_number x 4)
-*  bit_word_addr = bit_band_base + bit_word_offset
-*/
-
+/* Bit banding equations according to datasheet.
+***************************************************
+ * bit_word_offset = (byte_offset x 32) + (bit_number x 4)
+ *  bit_word_addr = bit_band_base + bit_word_offset
+ */
+/* Macro to calculate the location of a given bit in the bitband allias memory. */
 #define BITBAND_TARGET_BIT_ADDRESS(register_base_address, bit_number) ((BITBAND_ALIAS_BASE_PERIPHERALS + (register_base_address - BITBAND_BASE_PERIPHERALS)* 32 + (bit_number*4)))
 
 #define GPIO_PORTA_BIT0            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_BASE_ADDRESS, 0)))
@@ -88,58 +90,6 @@
 #define GPIO_PORTF_BIT3            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTF_BASE_ADDRESS, 3)))
 #define GPIO_PORTF_BIT4            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTF_BASE_ADDRESS, 4))) 
 
-/*
-#define GPIO_PORTA_BIT0_ADDRESS           (volatile uint32 *)0x40004004
-#define GPIO_PORTA_BIT1_ADDRESS           (volatile uint32 *)0x40004008
-#define GPIO_PORTA_BIT2_ADDRESS           (volatile uint32 *)0x40004010
-#define GPIO_PORTA_BIT3_ADDRESS           (volatile uint32 *)0x40004020
-#define GPIO_PORTA_BIT4_ADDRESS           (volatile uint32 *)0x40004040
-#define GPIO_PORTA_BIT5_ADDRESS           (volatile uint32 *)0x40004080
-#define GPIO_PORTA_BIT6_ADDRESS           (volatile uint32 *)0x40004100
-#define GPIO_PORTA_BIT7_ADDRESS           (volatile uint32 *)0x40004200
-	
-#define GPIO_PORTB_BIT0_ADDRESS           (volatile uint32 *)0x40005004
-#define GPIO_PORTB_BIT1_ADDRESS           (volatile uint32 *)0x40005008
-#define GPIO_PORTB_BIT2_ADDRESS           (volatile uint32 *)0x40005010
-#define GPIO_PORTB_BIT3_ADDRESS           (volatile uint32 *)0x40005020
-#define GPIO_PORTB_BIT4_ADDRESS           (volatile uint32 *)0x40005040
-#define GPIO_PORTB_BIT5_ADDRESS           (volatile uint32 *)0x40005080
-#define GPIO_PORTB_BIT6_ADDRESS           (volatile uint32 *)0x40005100
-#define GPIO_PORTB_BIT7_ADDRESS           (volatile uint32 *)0x40005200
-	
-#define GPIO_PORTC_BIT0_ADDRESS           (volatile uint32 *)0x40006004
-#define GPIO_PORTC_BIT1_ADDRESS           (volatile uint32 *)0x40006008
-#define GPIO_PORTC_BIT2_ADDRESS           (volatile uint32 *)0x40006010
-#define GPIO_PORTC_BIT3_ADDRESS           (volatile uint32 *)0x40006020
-#define GPIO_PORTC_BIT4_ADDRESS           (volatile uint32 *)0x40006040
-#define GPIO_PORTC_BIT5_ADDRESS           (volatile uint32 *)0x40006080
-#define GPIO_PORTC_BIT6_ADDRESS           (volatile uint32 *)0x40006100
-#define GPIO_PORTC_BIT7_ADDRESS           (volatile uint32 *)0x40006200
-	
-#define GPIO_PORTD_BIT0_ADDRESS           (volatile uint32 *)0x40007004
-#define GPIO_PORTD_BIT1_ADDRESS           (volatile uint32 *)0x40007008
-#define GPIO_PORTD_BIT2_ADDRESS           (volatile uint32 *)0x40007010
-#define GPIO_PORTD_BIT3_ADDRESS           (volatile uint32 *)0x40007020
-#define GPIO_PORTD_BIT4_ADDRESS           (volatile uint32 *)0x40007040
-#define GPIO_PORTD_BIT5_ADDRESS           (volatile uint32 *)0x40007080
-#define GPIO_PORTD_BIT6_ADDRESS           (volatile uint32 *)0x40007100
-#define GPIO_PORTD_BIT7_ADDRESS           (volatile uint32 *)0x40007200
-	
-#define GPIO_PORTE_BIT0_ADDRESS           (volatile uint32 *)0x40024004
-#define GPIO_PORTE_BIT1_ADDRESS           (volatile uint32 *)0x40024008
-#define GPIO_PORTE_BIT2_ADDRESS           (volatile uint32 *)0x40024010
-#define GPIO_PORTE_BIT3_ADDRESS           (volatile uint32 *)0x40024020
-#define GPIO_PORTE_BIT4_ADDRESS           (volatile uint32 *)0x40024040
-#define GPIO_PORTE_BIT5_ADDRESS           (volatile uint32 *)0x40024080
-	
-#define GPIO_PORTF_BIT0_ADDRESS           (volatile uint32 *)0x40025004
-#define GPIO_PORTF_BIT1_ADDRESS           (volatile uint32 *)0x40025008
-#define GPIO_PORTF_BIT2_ADDRESS           (volatile uint32 *)0x40025010
-#define GPIO_PORTF_BIT3_ADDRESS           (volatile uint32 *)0x40025020
-#define GPIO_PORTF_BIT4_ADDRESS           (volatile uint32 *)0x40025040 */
-
-
-
 
 /**********************************************************************************************************************
  *  LOCAL DATA 
@@ -164,7 +114,7 @@
 
 /******************************************************************************
 * \Syntax          : Dio_LevelType Dio_ReadChannel(Dio_ChannelType ChannelId)        
-* \Description     : Describe this service                                                                                                               
+* \Description     : Read the level a given bin.                                                                                                              
 * \Sync\Async      : Synchronous                                               
 * \Reentrancy      : Reentrant                                             
 * \Parameters (in) : ChannelId - ID of DIO channel.                     
@@ -312,7 +262,7 @@ Dio_LevelType Dio_ReadChannel(Dio_ChannelType ChannelId)
 
 /******************************************************************************
 * \Syntax          : void Dio_WriteChannel(Dio_ChannelType ChannelId, Dio_LevelType Level)        
-* \Description     : Describe this service                                                                                                               
+* \Description     : write the given level value to a given bin.                                                                                                               
 * \Sync\Async      : Synchronous                                               
 * \Reentrancy      : Reentrant                                             
 * \Parameters (in) : ChannelId - ID of DIO channel.
@@ -355,7 +305,7 @@ void Dio_WriteChannel(Dio_ChannelType ChannelId, Dio_LevelType Level)
 
 /******************************************************************************
 * \Syntax          : Dio_PortLevelType Dio_ReadPort(Dio_PortType PortId)        
-* \Description     : Describe this service                                                                                                               
+* \Description     : Read the value on a given port.                                                                                                               
 * \Sync\Async      : Synchronous                                               
 * \Reentrancy      : Reentrant                                             
 * \Parameters (in) : PortId - ID of DIO port.                     
@@ -392,7 +342,7 @@ Dio_PortLevelType Dio_ReadPort(Dio_PortType PortId)
 
 /******************************************************************************
 * \Syntax          : void Dio_WritePort(Dio_PortType PortId, Dio_PortLevelType Level)        
-* \Description     : Describe this service                                                                                                               
+* \Description     : Write a given value to a given port.                                                                                                              
 * \Sync\Async      : Synchronous                                               
 * \Reentrancy      : Reentrant                                             
 * \Parameters (in) : PortId - ID of DIO Port.
@@ -427,7 +377,7 @@ void Dio_WritePort(Dio_PortType PortId, Dio_PortLevelType Level)
 
 /******************************************************************************
 * \Syntax          :  Dio_LevelType Dio_FlipChannel(Dio_ChannelType ChannelId)        
-* \Description     : Describe this service                                                                                                               
+* \Description     : flip the given bin level.                                                                                                               
 * \Sync\Async      : Synchronous                                               
 * \Reentrancy      : Reentrant                                             
 * \Parameters (in) : ChannelId - ID of DIO channel.                     
