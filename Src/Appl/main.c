@@ -1,4 +1,3 @@
-
 #include "Appl.h"
 
 #define ON_TIME   2
@@ -13,7 +12,7 @@ int main (void)
 		Appl_LedControl(ON_TIME, OFF_TIME);
 	}
 	
-
 	return 0;
+	
 }
 
