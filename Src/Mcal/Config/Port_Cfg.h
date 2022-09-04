@@ -118,8 +118,8 @@
 
 
 /* PORT Configured PIN initial level value */
-#define PORT_PIN_LEVEL_HIGH          (1U)
-#define PORT_PIN_LEVEL_LOW           (0U)
+#define PORT_PIN_LEVEL_HIGH          (uint8)1
+#define PORT_PIN_LEVEL_LOW           (uint8)0
 
 #define PORT_PIN_OUTPUT_CURRENT_2m       (uint8)2
 #define PORT_PIN_OUTPUT_CURRENT_4m       (uint8)4

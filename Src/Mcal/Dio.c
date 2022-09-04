@@ -128,135 +128,135 @@ Dio_LevelType Dio_ReadChannel(Dio_ChannelType ChannelId)
 	switch(ChannelId)
 	{
 		case CHANNAL_A0:   return  GPIO_PORTA_BIT0;	                   
-	                     break;
+	                     
 		
 		case CHANNAL_A1:   return  GPIO_PORTA_BIT1;	                   
-	                     break;
+	                     
 		
 		case CHANNAL_A2:   return  GPIO_PORTA_BIT2;	                   
-	                     break;
+	                     
 		
 		case CHANNAL_A3:   return  GPIO_PORTA_BIT3;		                  
-	                     break;
+	                     
 		
 		case CHANNAL_A4:   return  GPIO_PORTA_BIT4;		                   
-	                     break;
+	                     
 		
 		case CHANNAL_A5:   return  GPIO_PORTA_BIT5;		                   
-	                     break;
+	                     
 											 
 		case CHANNAL_A6:   return  GPIO_PORTA_BIT6;
-	                     break;
+	                     
 											 
 	  case CHANNAL_A7:   return  GPIO_PORTA_BIT7;		                   
-	                     break;
+	                     
 											 
  	  case CHANNAL_B0:   return  GPIO_PORTB_BIT0;
-	                     break;
+	                     
 		
 		case CHANNAL_B1:   return  GPIO_PORTB_BIT1;	                
-	                     break;
+	                     
 		
 		case CHANNAL_B2:   return  GPIO_PORTB_BIT2;
-	                     break;
+	                     
 		
 		case CHANNAL_B3:   return  GPIO_PORTB_BIT3;
-	                     break;
+	                     
 		
 		case CHANNAL_B4:   return  GPIO_PORTB_BIT4;
-	                     break;
+	                     
 		
 		case CHANNAL_B5:   return  GPIO_PORTB_BIT5;
-	                     break;
+	                     
 											 
 		case CHANNAL_B6:   return  GPIO_PORTB_BIT6;
-	                     break;
+	                     
 											 
 	  case CHANNAL_B7:   return  GPIO_PORTB_BIT7;
-	                     break;
+	                     
 											 
 		case CHANNAL_C0:   return  GPIO_PORTC_BIT0;
-	                     break;
+	                     
 		
 		case CHANNAL_C1:   return  GPIO_PORTC_BIT1;
-	                     break;
+	                     
 		
 		case CHANNAL_C2:   return  GPIO_PORTC_BIT2;
-	                     break;
+	                     
 		
 		case CHANNAL_C3:   return  GPIO_PORTC_BIT3;
-	                     break;
+	                     
 		
 		case CHANNAL_C4:   return  GPIO_PORTC_BIT4;
-	                     break;
+	                     
 		
 		case CHANNAL_C5:   return  GPIO_PORTC_BIT5;
-	                     break;
+	                     
 											 
 		case CHANNAL_C6:   return  GPIO_PORTC_BIT6;
-	                     break;
+	                     
 											 
 	  case CHANNAL_C7:   return  GPIO_PORTC_BIT7;
-	                     break;
+	                     
 											 
  		case CHANNAL_D0:   return  GPIO_PORTD_BIT0;
-	                     break;
+	                     
 		
 		case CHANNAL_D1:   return  GPIO_PORTD_BIT1;
-	                     break;
+	                     
 		
 		case CHANNAL_D2:   return  GPIO_PORTD_BIT2;
-	                     break;
+	                     
 		
 		case CHANNAL_D3:   return  GPIO_PORTD_BIT3;
-	                     break;
+	                     
 		
 		case CHANNAL_D4:   return  GPIO_PORTD_BIT4;
-	                     break;
+	                     
 		
 		case CHANNAL_D5:   return  GPIO_PORTD_BIT5;
-	                     break;
+	                     
 											 
 		case CHANNAL_D6:   return  GPIO_PORTD_BIT6;
-	                     break;
+	                     
 											 
 	  case CHANNAL_D7:   return  GPIO_PORTD_BIT7;
-	                     break;
+	                     
 											 
 		case CHANNAL_E0:   return  GPIO_PORTE_BIT0;
-	                     break;
+	                     
 		
 		case CHANNAL_E1:   return  GPIO_PORTE_BIT1;
-	                     break;
+	                     
 		
 		case CHANNAL_E2:   return  GPIO_PORTE_BIT2;
-	                     break;
+	                     
 		
 		case CHANNAL_E3:   return  GPIO_PORTE_BIT3;
-	                     break;
+	                     
 		
 		case CHANNAL_E4:   return  GPIO_PORTE_BIT4;
-	                     break;
+	                     
 		
 		case CHANNAL_E5:   return  GPIO_PORTE_BIT5;
-	                     break;
+	                     
 											 
 		case CHANNAL_F0:   return  GPIO_PORTF_BIT0;
-	                     break;
+	                     
 		
 		case CHANNAL_F1:   return  GPIO_PORTF_BIT1;
-	                     break;
+	                     
 		
 		case CHANNAL_F2:   return  GPIO_PORTF_BIT2;
-	                     break;
+	                     
 		
 		case CHANNAL_F3:   return  GPIO_PORTF_BIT3;
-	                     break;
+	                     
 		
 		case CHANNAL_F4:   return  GPIO_PORTF_BIT4;
-	                     break;
-											 	 										                   		
+	                     											 	 										                   		
 	}
+	return E_NOT_OK;
 
 }
 
@@ -318,25 +318,24 @@ Dio_PortLevelType Dio_ReadPort(Dio_PortType PortId)
 	switch(PortId)
 	{
 		case PORTA_NUM: return *(GPIO_PORTA_BASE_ADDRESS + PORT_DATA_REG_OFFSET);
-		                break;
+		                
 		
 		case PORTB_NUM: return *(GPIO_PORTB_BASE_ADDRESS + PORT_DATA_REG_OFFSET);
-		                break;
+		                
 		
 		case PORTC_NUM: return *(GPIO_PORTC_BASE_ADDRESS + PORT_DATA_REG_OFFSET);
-		                break;
+		                
 		
 		case PORTD_NUM: return *(GPIO_PORTD_BASE_ADDRESS + PORT_DATA_REG_OFFSET);
-		                break;
+		                
 		
 		case PORTE_NUM: return *(GPIO_PORTE_BASE_ADDRESS + PORT_DATA_REG_OFFSET);
-		                break;
+		                
 		
-		case PORTF_NUM: return *(GPIO_PORTF_BASE_ADDRESS + PORT_DATA_REG_OFFSET);
-		                break;
-		
+		case PORTF_NUM: return *(GPIO_PORTF_BASE_ADDRESS + PORT_DATA_REG_OFFSET);	             	
 		
 	}
+	return E_NOT_OK;
 	
 }
 
