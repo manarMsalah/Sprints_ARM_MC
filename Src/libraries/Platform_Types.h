@@ -34,8 +34,14 @@
    #define FALSE  0u
 #endif
 
-#define ENABLE    1u
-#define DISABLE   0u
+#ifndef ENABLE
+   #define ENABLE   1u
+#endif
+
+#ifndef DISABLE
+   #define DISABLE  0u
+#endif
+
 
 #define CPU_BIT_ORDER    LSB_FIRST        /*little endian bit ordering*/
 #define CPU_BYTE_ORDER   LOW_BYTE_FIRST   /*little endian byte ordering*/
