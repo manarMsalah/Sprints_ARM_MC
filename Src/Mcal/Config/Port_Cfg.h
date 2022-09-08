@@ -14,7 +14,7 @@
 /**********************************************************************************************************************
  * INCLUDES
  *********************************************************************************************************************/
-
+#include "Std_Types.h"
 
 /**********************************************************************************************************************
  *  GLOBAL CONSTANT MACROS
@@ -23,7 +23,7 @@
 #define NUMBER_OF_CHANNELS             (43U)
 
 
-/* PIN Index in the array of structures in Port_PBcfg.c */
+/* PIN Index of the array of structures in Port_PBcfg.c */
 #define PORTA_PIN0_ID_INDEX        (uint8)0
 #define PORTA_PIN1_ID_INDEX        (uint8)1
 #define PORTA_PIN2_ID_INDEX        (uint8)2
@@ -72,6 +72,7 @@
 #define PORTF_PIN2_ID_INDEX        (uint8)40
 #define PORTF_PIN3_ID_INDEX        (uint8)41
 #define PORTF_PIN4_ID_INDEX        (uint8)42
+
 
 
 /* PORT Configured Port ID's  */
