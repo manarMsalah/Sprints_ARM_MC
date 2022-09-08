@@ -18,6 +18,7 @@
 #include "Led.h"
 #include "Appl.h"
 
+
 /**********************************************************************************************************************
 *  LOCAL MACROS CONSTANT\FUNCTION
 *********************************************************************************************************************/
@@ -87,7 +88,7 @@ void Appl_SetUp(void)
 *******************************************************************************/
 void Appl_NewTick(void)
 {
-	New_Tick_Count= +TICK_TIME_BY_SECOND;
+	New_Tick_Count++;
 	New_Tick_Flag= 1;
 	
 }
@@ -105,6 +106,7 @@ void Appl_NewTick(void)
 *******************************************************************************/
 void Appl_LedControl(uint16 on_time, uint16 off_time)
 {
+	uint16 total_time= on_time + off_time;
 	while(1)
 	{
 			if(New_Tick_Flag == 1)
@@ -115,7 +117,7 @@ void Appl_LedControl(uint16 on_time, uint16 off_time)
 					New_Tick_Flag= 0;		      
 				}
 
-		    else if(New_Tick_Count == off_time)
+		    else if(New_Tick_Count == total_time)
 				{
 					Led_setOn();
 		    	New_Tick_Flag= 0;
@@ -124,10 +126,7 @@ void Appl_LedControl(uint16 on_time, uint16 off_time)
 			}
 
 	}
-	
-			
-
-	
+		
 }
 
 /**********************************************************************************************************************
