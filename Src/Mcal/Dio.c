@@ -2,7 +2,7 @@
  *  FILE DESCRIPTION
  *  -----------------------------------------------------------------------------------------------------------------*/
 /**        \file  Dio.c
- *        \brief  
+ *        \brief  Source file for Dio driver - TM4C123GH6PM Microcontroller.
  *
  *      \details  
  *
@@ -14,24 +14,20 @@
  *********************************************************************************************************************/
 #include "Dio.h"
 
-
 /**********************************************************************************************************************
  *  LOCAL MACROS CONSTANT\FUNCTION
  *********************************************************************************************************************/
 
-/* GPIO Registers base addresses */
-#define GPIO_PORTA_BASE_ADDRESS           (volatile uint32 *)0x40004000
-#define GPIO_PORTB_BASE_ADDRESS           (volatile uint32 *)0x40005000
-#define GPIO_PORTC_BASE_ADDRESS           (volatile uint32 *)0x40006000
-#define GPIO_PORTD_BASE_ADDRESS           (volatile uint32 *)0x40007000
-#define GPIO_PORTE_BASE_ADDRESS           (volatile uint32 *)0x40024000
-#define GPIO_PORTF_BASE_ADDRESS           (volatile uint32 *)0x40025000
-	
-#define PORT_DATA_REG_OFFSET              0x3FC
+/* GPIO Registers base addresses with adding 0x3fc mask*/
+#define GPIO_PORTA_ADDRESS           0x400043FC
+#define GPIO_PORTB_ADDRESS           0x400053FC
+#define GPIO_PORTC_ADDRESS           0x400063FC
+#define GPIO_PORTD_ADDRESS           0x400073FC
+#define GPIO_PORTE_ADDRESS           0x400243FC
+#define GPIO_PORTF_ADDRESS           0x400253FC
 
-
-#define BITBAND_BASE_PERIPHERALS          (volatile uint32 *)0x40000000
-#define BITBAND_ALIAS_BASE_PERIPHERALS    (volatile uint32 *)0x42000000
+#define BITBAND_BASE_PERIPHERALS          0x40000000
+#define BITBAND_ALIAS_BASE_PERIPHERALS    0x42000000
 
 /* Bit banding equations according to datasheet.
 ***************************************************
@@ -39,56 +35,58 @@
  *  bit_word_addr = bit_band_base + bit_word_offset
  */
 /* Macro to calculate the location of a given bit in the bitband allias memory. */
-#define BITBAND_TARGET_BIT_ADDRESS(register_base_address, bit_number) ((BITBAND_ALIAS_BASE_PERIPHERALS + (register_base_address - BITBAND_BASE_PERIPHERALS)* 32 + (bit_number*4)))
+#define BITBAND_TARGET_BIT_ADDRESS(register_base_address, bit_number) (BITBAND_ALIAS_BASE_PERIPHERALS + (((register_base_address) - BITBAND_BASE_PERIPHERALS)* 32) + ((bit_number)*4))
 
-#define GPIO_PORTA_BIT0            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_BASE_ADDRESS, 0)))
-#define GPIO_PORTA_BIT1            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_BASE_ADDRESS, 1)))
-#define GPIO_PORTA_BIT2            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_BASE_ADDRESS, 2)))
-#define GPIO_PORTA_BIT3            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_BASE_ADDRESS, 3)))
-#define GPIO_PORTA_BIT4            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_BASE_ADDRESS, 4)))
-#define GPIO_PORTA_BIT5            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_BASE_ADDRESS, 5)))
-#define GPIO_PORTA_BIT6            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_BASE_ADDRESS, 6)))
-#define GPIO_PORTA_BIT7            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_BASE_ADDRESS, 7)))
+
+
+#define GPIO_PORTA_BIT0            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_ADDRESS, 0)))
+#define GPIO_PORTA_BIT1            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_ADDRESS, 1)))
+#define GPIO_PORTA_BIT2            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_ADDRESS, 2)))
+#define GPIO_PORTA_BIT3            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_ADDRESS, 3)))
+#define GPIO_PORTA_BIT4            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_ADDRESS, 4)))
+#define GPIO_PORTA_BIT5            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_ADDRESS, 5)))
+#define GPIO_PORTA_BIT6            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_ADDRESS, 6)))
+#define GPIO_PORTA_BIT7            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_ADDRESS, 7)))
 	
-#define GPIO_PORTB_BIT0            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_BASE_ADDRESS, 0)))
-#define GPIO_PORTB_BIT1            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_BASE_ADDRESS, 1)))
-#define GPIO_PORTB_BIT2            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_BASE_ADDRESS, 2)))
-#define GPIO_PORTB_BIT3            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_BASE_ADDRESS, 3)))
-#define GPIO_PORTB_BIT4            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_BASE_ADDRESS, 4)))
-#define GPIO_PORTB_BIT5            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_BASE_ADDRESS, 5)))
-#define GPIO_PORTB_BIT6            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_BASE_ADDRESS, 6)))
-#define GPIO_PORTB_BIT7            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_BASE_ADDRESS, 7)))
+#define GPIO_PORTB_BIT0            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_ADDRESS, 0)))
+#define GPIO_PORTB_BIT1            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_ADDRESS, 1)))
+#define GPIO_PORTB_BIT2            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_ADDRESS, 2)))
+#define GPIO_PORTB_BIT3            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_ADDRESS, 3)))
+#define GPIO_PORTB_BIT4            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_ADDRESS, 4)))
+#define GPIO_PORTB_BIT5            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_ADDRESS, 5)))
+#define GPIO_PORTB_BIT6            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_ADDRESS, 6)))
+#define GPIO_PORTB_BIT7            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_ADDRESS, 7)))
 	
-#define GPIO_PORTC_BIT0            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_BASE_ADDRESS, 0)))
-#define GPIO_PORTC_BIT1            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_BASE_ADDRESS, 1)))
-#define GPIO_PORTC_BIT2            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_BASE_ADDRESS, 2)))
-#define GPIO_PORTC_BIT3            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_BASE_ADDRESS, 3)))
-#define GPIO_PORTC_BIT4            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_BASE_ADDRESS, 4)))
-#define GPIO_PORTC_BIT5            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_BASE_ADDRESS, 5)))
-#define GPIO_PORTC_BIT6            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_BASE_ADDRESS, 6)))
-#define GPIO_PORTC_BIT7            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_BASE_ADDRESS, 7)))
+#define GPIO_PORTC_BIT0            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_ADDRESS, 0)))
+#define GPIO_PORTC_BIT1            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_ADDRESS, 1)))
+#define GPIO_PORTC_BIT2            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_ADDRESS, 2)))
+#define GPIO_PORTC_BIT3            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_ADDRESS, 3)))
+#define GPIO_PORTC_BIT4            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_ADDRESS, 4)))
+#define GPIO_PORTC_BIT5            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_ADDRESS, 5)))
+#define GPIO_PORTC_BIT6            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_ADDRESS, 6)))
+#define GPIO_PORTC_BIT7            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_ADDRESS, 7)))
 	
-#define GPIO_PORTD_BIT0            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_BASE_ADDRESS, 0)))
-#define GPIO_PORTD_BIT1            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_BASE_ADDRESS, 1)))
-#define GPIO_PORTD_BIT2            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_BASE_ADDRESS, 2)))
-#define GPIO_PORTD_BIT3            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_BASE_ADDRESS, 3)))
-#define GPIO_PORTD_BIT4            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_BASE_ADDRESS, 4)))
-#define GPIO_PORTD_BIT5            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_BASE_ADDRESS, 5)))
-#define GPIO_PORTD_BIT6            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_BASE_ADDRESS, 6)))
-#define GPIO_PORTD_BIT7            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_BASE_ADDRESS, 7)))
+#define GPIO_PORTD_BIT0            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_ADDRESS, 0)))
+#define GPIO_PORTD_BIT1            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_ADDRESS, 1)))
+#define GPIO_PORTD_BIT2            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_ADDRESS, 2)))
+#define GPIO_PORTD_BIT3            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_ADDRESS, 3)))
+#define GPIO_PORTD_BIT4            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_ADDRESS, 4)))
+#define GPIO_PORTD_BIT5            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_ADDRESS, 5)))
+#define GPIO_PORTD_BIT6            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_ADDRESS, 6)))
+#define GPIO_PORTD_BIT7            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_ADDRESS, 7)))
 	
-#define GPIO_PORTE_BIT0            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTE_BASE_ADDRESS, 0)))
-#define GPIO_PORTE_BIT1            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTE_BASE_ADDRESS, 1)))
-#define GPIO_PORTE_BIT2            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTE_BASE_ADDRESS, 2)))
-#define GPIO_PORTE_BIT3            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTE_BASE_ADDRESS, 3)))
-#define GPIO_PORTE_BIT4            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTE_BASE_ADDRESS, 4)))
-#define GPIO_PORTE_BIT5            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTE_BASE_ADDRESS, 5)))
+#define GPIO_PORTE_BIT0            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTE_ADDRESS, 0)))
+#define GPIO_PORTE_BIT1            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTE_ADDRESS, 1)))
+#define GPIO_PORTE_BIT2            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTE_ADDRESS, 2)))
+#define GPIO_PORTE_BIT3            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTE_ADDRESS, 3)))
+#define GPIO_PORTE_BIT4            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTE_ADDRESS, 4)))
+#define GPIO_PORTE_BIT5            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTE_ADDRESS, 5)))
 	
-#define GPIO_PORTF_BIT0            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTF_BASE_ADDRESS, 0)))
-#define GPIO_PORTF_BIT1            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTF_BASE_ADDRESS, 1)))
-#define GPIO_PORTF_BIT2            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTF_BASE_ADDRESS, 2)))
-#define GPIO_PORTF_BIT3            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTF_BASE_ADDRESS, 3)))
-#define GPIO_PORTF_BIT4            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTF_BASE_ADDRESS, 4))) 
+#define GPIO_PORTF_BIT0            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTF_ADDRESS, 0)))
+#define GPIO_PORTF_BIT1            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTF_ADDRESS, 1)))
+#define GPIO_PORTF_BIT2            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTF_ADDRESS, 2)))
+#define GPIO_PORTF_BIT3            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTF_ADDRESS, 3)))
+#define GPIO_PORTF_BIT4            *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTF_ADDRESS, 4))) 
 
 
 /**********************************************************************************************************************
@@ -123,7 +121,6 @@
 *******************************************************************************/
 Dio_LevelType Dio_ReadChannel(Dio_ChannelType ChannelId)
 {
-
 
 	switch(ChannelId)
 	{
@@ -281,22 +278,22 @@ void Dio_WriteChannel(Dio_ChannelType ChannelId, Dio_LevelType Level)
 	/*chNum= ChannelId%8;*/
 	switch(portNum)
 	{
-		case PORTA_NUM: *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_BASE_ADDRESS, ChannelId%8)))= Level;
+		case PORTA_NUM: *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_ADDRESS, ChannelId%8)))= Level;
 		             break;
 		
-		case PORTB_NUM: *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_BASE_ADDRESS, ChannelId%8)))= Level;
+		case PORTB_NUM: *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_ADDRESS, ChannelId%8)))= Level;
 		             break;
 		
-		case PORTC_NUM: *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_BASE_ADDRESS, ChannelId%8)))= Level;
+		case PORTC_NUM: *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_ADDRESS, ChannelId%8)))= Level;
 		             break;
 		
-		case PORTD_NUM: *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_BASE_ADDRESS, ChannelId%8)))= Level;
+		case PORTD_NUM: *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_ADDRESS, ChannelId%8)))= Level;
 		             break;
 		
-		case PORTE_NUM: *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTE_BASE_ADDRESS, ChannelId%8)))= Level;
+		case PORTE_NUM: *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTE_ADDRESS, ChannelId%8)))= Level;
 		             break;
 		
-		case PORTF_NUM: *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTF_BASE_ADDRESS, ChannelId%8)))= Level;
+		case PORTF_NUM: *((volatile uint32 *)BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTF_ADDRESS, ChannelId%8))= Level;
 		             break;		
 	}
 		
@@ -317,22 +314,22 @@ Dio_PortLevelType Dio_ReadPort(Dio_PortType PortId)
 {
 	switch(PortId)
 	{
-		case PORTA_NUM: return *(GPIO_PORTA_BASE_ADDRESS + PORT_DATA_REG_OFFSET);
+		case PORTA_NUM: return *(volatile uint32 *)(GPIO_PORTA_ADDRESS);
 		                
 		
-		case PORTB_NUM: return *(GPIO_PORTB_BASE_ADDRESS + PORT_DATA_REG_OFFSET);
+		case PORTB_NUM: return *(volatile uint32 *)(GPIO_PORTB_ADDRESS);
 		                
 		
-		case PORTC_NUM: return *(GPIO_PORTC_BASE_ADDRESS + PORT_DATA_REG_OFFSET);
+		case PORTC_NUM: return *(volatile uint32 *)(GPIO_PORTC_ADDRESS);
 		                
 		
-		case PORTD_NUM: return *(GPIO_PORTD_BASE_ADDRESS + PORT_DATA_REG_OFFSET);
+		case PORTD_NUM: return *(volatile uint32 *)(GPIO_PORTD_ADDRESS);
 		                
 		
-		case PORTE_NUM: return *(GPIO_PORTE_BASE_ADDRESS + PORT_DATA_REG_OFFSET);
+		case PORTE_NUM: return *(volatile uint32 *)(GPIO_PORTE_ADDRESS);
 		                
 		
-		case PORTF_NUM: return *(GPIO_PORTF_BASE_ADDRESS + PORT_DATA_REG_OFFSET);	             	
+		case PORTF_NUM: return *(volatile uint32 *)(GPIO_PORTF_ADDRESS);	             	
 		
 	}
 	return E_NOT_OK;
@@ -353,22 +350,22 @@ void Dio_WritePort(Dio_PortType PortId, Dio_PortLevelType Level)
 {
 		switch(PortId)
 	{
-		case PORTA_NUM: *(GPIO_PORTA_BASE_ADDRESS + PORT_DATA_REG_OFFSET) = Level;
+		case PORTA_NUM: *(volatile uint32 *)(GPIO_PORTA_ADDRESS) = Level;
 		                break;
 		
-		case PORTB_NUM: *(GPIO_PORTB_BASE_ADDRESS + PORT_DATA_REG_OFFSET) = Level;
+		case PORTB_NUM: *(volatile uint32 *)(GPIO_PORTB_ADDRESS) = Level;
 		                break;
 		
-		case PORTC_NUM: *(GPIO_PORTC_BASE_ADDRESS + PORT_DATA_REG_OFFSET) = Level;
+		case PORTC_NUM: *(volatile uint32 *)(GPIO_PORTC_ADDRESS) = Level;
 		                break;
 		
-		case PORTD_NUM: *(GPIO_PORTD_BASE_ADDRESS + PORT_DATA_REG_OFFSET) = Level;
+		case PORTD_NUM: *(volatile uint32 *)(GPIO_PORTD_ADDRESS) = Level;
 		                break;
 		
-		case PORTE_NUM: *(GPIO_PORTE_BASE_ADDRESS + PORT_DATA_REG_OFFSET) = Level;
+		case PORTE_NUM: *(volatile uint32 *)(GPIO_PORTE_ADDRESS) = Level;
 		                break;
 		
-		case PORTF_NUM: *(GPIO_PORTF_BASE_ADDRESS + PORT_DATA_REG_OFFSET) = Level;
+		case PORTF_NUM: *(volatile uint32 *)(GPIO_PORTF_ADDRESS) = Level;
 		                break;
 	}
 }
@@ -394,22 +391,22 @@ void Dio_WritePort(Dio_PortType PortId, Dio_PortLevelType Level)
 	/*chNum= ChannelId%8;*/
 	switch(portNum)
 	{
-		case PORTA_NUM: level = *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_BASE_ADDRESS, ChannelId%8)));
+		case PORTA_NUM: level = *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTA_ADDRESS, ChannelId%8)));
 		             break;
 		
-		case PORTB_NUM: level = *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_BASE_ADDRESS, ChannelId%8)));
+		case PORTB_NUM: level = *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTB_ADDRESS, ChannelId%8)));
 		             break;
 		
-		case PORTC_NUM: level = *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_BASE_ADDRESS, ChannelId%8)));
+		case PORTC_NUM: level = *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTC_ADDRESS, ChannelId%8)));
 		             break;
 		
-		case PORTD_NUM: level = *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_BASE_ADDRESS, ChannelId%8)));
+		case PORTD_NUM: level = *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTD_ADDRESS, ChannelId%8)));
 		             break;
 		
-		case PORTE_NUM: level = *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTE_BASE_ADDRESS, ChannelId%8)));
+		case PORTE_NUM: level = *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTE_ADDRESS, ChannelId%8)));
 		             break;
 		
-		case PORTF_NUM: level = *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTF_BASE_ADDRESS, ChannelId%8)));
+		case PORTF_NUM: level = *((volatile uint32 *)(BITBAND_TARGET_BIT_ADDRESS(GPIO_PORTF_ADDRESS, ChannelId%8)));
 		             break;		
 	}
 	
