@@ -42,7 +42,9 @@ void Appl_SetUp(void);
 
 void Appl_NewTick(void);
 
-void Appl_LedControl(uint16, uint16);
+void Appl_SetOnAndOffTime(void);
+
+void Appl_LedControl(void);
  
 #endif  /* APPL_H */
 
